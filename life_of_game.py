@@ -76,7 +76,20 @@ def no_of_neighbour(lst,arr):
     
     return count
  
-    
+def game(row,col,arr,arr1):
+        for  i in range(row):
+            for  j in range(col):
+                lst1       = neighbour_indent(i,j,row,col)
+                num        = no_of_neighbour(lst1,arr)
+                arr1[i][j] = num
+                # arr[i][j]  =  rules(arr[i][j],num)
+        for i in range (row):
+            for j in range(col):
+                arr[i][j] = rules(arr[i][j],arr1[i][j])
+
+        print("\n")
+        draw(arr,row,col)
+
 def main():
     # - indicates dead cells
     # * indicatees  live cells
@@ -90,18 +103,9 @@ def main():
     arr1 = np.zeros((row,col))
     lst1 = []
     draw(arr,row,col)
-    for  i in range(row):
-        for  j in range(col):
-            lst1       = neighbour_indent(i,j,row,col)
-            num        = no_of_neighbour(lst1,arr)
-            arr1[i][j] = num
-            # arr[i][j]  =  rules(arr[i][j],num)
-    for i in range (row):
-        for j in range(col):
-            arr[i][j] = rules(arr[i][j],arr1[i][j])
-
-    print("\n")
-    draw(arr,row,col)
+    for  i in range(10):
+        game(row,col,arr,arr1)
+    
 
 if __name__ == "__main__":
     main()
