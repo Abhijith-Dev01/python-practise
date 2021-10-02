@@ -1,13 +1,11 @@
-from typing import List
-import numpy as np
-def draw(arr,m,n):
+def draw_board(board_arr,m,n):
  for  i in range(m):
     for j in range (n):        
-         print(arr[i][j],end=' ')
+         print(board_arr[i][j],end=' ')
     print('')
     
 
-def rules(cell,neighbours):
+def apply_rules(cell,neighbours):
     if cell == "*":
         if neighbours in [2,3] :
             cell = '*'
@@ -20,91 +18,94 @@ def rules(cell,neighbours):
     return cell
 
 
-def neighbour_indent(row,col,tot_row,tot_col):#get the neighbour indentations
+def neighbour_index(row,col,tot_row,tot_col):#get the neighbours index
     if row == 0:
         if col == 0:
-            lst = list(([row+1,col],[row+1,col+1],[row,col+1]))
-            return lst
+            index_lst = list(([row+1,col],[row+1,col+1],[row,col+1]))
+            return index_lst
 
         if col == tot_col-1:
-            lst = list(([row+1,col],[row+1,col-1],[row,col-1]))
-            return lst
+            index_lst = list(([row+1,col],[row+1,col-1],[row,col-1]))
+            return index_lst
         else:
-            lst = list(([row,col+1],[row+1,col+1],
+            index_lst = list(([row,col+1],[row+1,col+1],
                              [row+1,col],[row+1,col-1],[row,col-1]))
-            return lst
+            return index_lst
 
     if col  == 0:
         if row == tot_row-1:
-            lst = list(([row-1,col],[row-1,col+1],[row,col+1]))
-            return lst
+            index_lst = list(([row-1,col],[row-1,col+1],[row,col+1]))
+            return index_lst
         else:    
-            lst = list(([row-1,col],[row+1,col],[row+1,col+1],
+            index_lst = list(([row-1,col],[row+1,col],[row+1,col+1],
                              [row-1,col+1],[row,col+1]))
-            return lst
+            return index_lst
 
     if row == tot_row-1:
         if col == tot_col-1:
-            lst = list(([row-1,col],[row-1,col-1],[row,col-1]))
-            return lst
+            index_lst = list(([row-1,col],[row-1,col-1],[row,col-1]))
+            return index_lst
         else:
-            lst = list(([row-1,col],[row,col-1],[row,col+1],
+            index_lst = list(([row-1,col],[row,col-1],[row,col+1],
                              [row-1,col+1],[row-1,col-1]))
-            return lst
+            return index_lst
 
     if col == tot_col-1:
-        lst = list(([row-1,col],[row+1,col],[row+1,col-1],
+        index_lst = list(([row-1,col],[row+1,col],[row+1,col-1],
                          [row-1,col-1],[row,col-1]))
-        return lst
+        return index_lst
     
     else:
-        lst = list(([row-1,col],[row-1,col-1],[row-1,col+1],
+        index_lst = list(([row-1,col],[row-1,col-1],[row-1,col+1],
                          [row+1,col-1],[row+1,col],[row+1,col+1],
-                         [row,col-1],[row,col+1]))
-        
-        return lst
+                         [row,col-1],[row,col+1]))  
+        return index_lst
 
-def no_of_neighbour(lst,arr):
+
+def no_of_neighbour(index_lst,board_arr):
     count = 0
-    for i in lst:
+    for i in index_lst:
         a = i[0]
         b = i[1]
-        if arr[a][b] == '*':
+        if board_arr[a][b] == '*':
             count = count+1
-        else:
-            continue
     
     return count
  
-def game(row,col,arr,arr1):
+
+def next_generation(row,col,gen_arr,neighbour_count_arr):
         for  i in range(row):
             for  j in range(col):
-                lst1       = neighbour_indent(i,j,row,col)
-                num        = no_of_neighbour(lst1,arr)
-                arr1[i][j] = num
-                # arr[i][j]  =  rules(arr[i][j],num)
+                neighbour_lst = neighbour_index(i,j,row,col)
+                num  = no_of_neighbour(neighbour_lst,gen_arr)
+    
+                neighbour_count_arr[i][j] = num
+
         for i in range (row):
             for j in range(col):
-                arr[i][j] = rules(arr[i][j],arr1[i][j])
+                gen_arr[i][j] = apply_rules(gen_arr[i][j],neighbour_count_arr[i][j])
 
         print("\n")
-        draw(arr,row,col)
+        draw_board(gen_arr,row,col)
+
 
 def main():
     # - indicates dead cells
     # * indicatees  live cells
-    arr  = [['-','-','-','-','-'],
-            ['-','-','*','-','-'],
-            ['-','-','*','-','-'],
-            ['-','-','*','-','-'],
-            ['-','-','-','-','-']]
-    row    = len(arr)
-    col    = len(arr[0])
-    arr1 = np.zeros((row,col))
-    lst1 = []
-    draw(arr,row,col)
+    first_gen  = [['-','-','-','-','-'],
+                  ['-','-','*','-','-'],
+                  ['-','-','*','-','-'],
+                  ['-','-','*','-','-'],
+                  ['-','-','-','-','-']]
+    row    = len(first_gen)
+    col    = len(first_gen[0])
+
+    neighbour_count_arr = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],
+                           [0,0,0,0,0],[0,0,0,0,0]]
+    draw_board(first_gen,row,col)
+
     for  i in range(10):
-        game(row,col,arr,arr1)
+        next_generation(row,col,first_gen,neighbour_count_arr)
     
 
 if __name__ == "__main__":
